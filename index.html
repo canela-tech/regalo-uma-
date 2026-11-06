@@ -106,7 +106,7 @@
     background: rgba(0,0,0,.35);
   }
   .pieza {
-    background-image: url('img/carta.jpg');
+  background: linear-gradient(135deg, #a855f7, #ec4899);
     background-size: 500% 400%;
     background-repeat:no-repeat;
     opacity:0; transition: opacity .6s;
@@ -175,7 +175,6 @@
   <div id="final">
     <h1>💜 Lo lograste 💜</h1>
     <p class="puntaje-final" id="puntajeFinal"></p>
-    <img id="cartaFinal" src="img/carta.jpg" alt="Nuestra carta">
     <div class="carta-texto" id="cartaTexto"></div>
     <button class="btn" onclick="location.reload()">Jugar otra vez 🔁</button>
   </div>
@@ -245,8 +244,12 @@ const PREGUNTAS = [
     o:["Estribo","Yunque","Martillo","Hioides"], c:0 }
 ];
 
-// La carta final (imagen que se arma y texto)
-const CARTA_IMG = "img/carta.jpg";
+ const CARTA_TEXTO = "Mi amor,este es un regalo que tuve que improvisar ya que revelaste mi regalooo.
+Quería darte gracias por todo nuevamente de verdad eres lo mejor que me ha pasado,tenerte cerca a hecho que me sienta mejor, que pueda ser yo misma y sobre todo que me sienta amada y quiero que tu lo sientas igual quiero que te sientas amado tanto como yo.
+Quiero que sepas que eres mi niño hermoso y siempre lo seras no importa que ciertas personas no nos quieran ver juntos yo no me pienso separar de ti porque contigo me siento especial. Quiero que siempre estemos juntos que todos esos planes que heamos hecho en algun momento de nuestra vida se cumplan. Pasar el resto de mis dias junto a ti, poder tener hijos y verlos crecer junto a ti, en algun momento contarles nuestra historia de amor y que ese sea su ejemplo a seguir para una relación.
+De verdad muchas gracias amorcito.
+TE AMO Y TE AMARE PARA SIEMPRE💜";
+
 /* ============================================================
    LÓGICA DEL JUEGO — no necesitas tocar nada de aquí abajo
    ============================================================ */
