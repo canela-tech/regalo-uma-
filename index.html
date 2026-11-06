@@ -1,0 +1,351 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Para ti 💜</title>
+<style>
+  * { margin:0; padding:0; box-sizing:border-box; }
+  body {
+    font-family: 'Segoe UI', Tahoma, sans-serif;
+    min-height:100vh;
+    background: url('fondo.jpg') center/cover no-repeat fixed;
+    display:flex; align-items:center; justify-content:center;
+    padding:16px;
+  }
+  body::before {
+    content:''; position:fixed; inset:0;
+    background: rgba(20,10,40,0.62);
+    z-index:0;
+  }
+  .caja {
+    position:relative; z-index:1;
+    width:100%; max-width:860px;
+    background: rgba(255,255,255,0.10);
+    backdrop-filter: blur(10px);
+    border:2px solid rgba(255,255,255,0.25);
+    border-radius:24px;
+    padding:26px 22px;
+    box-shadow:0 18px 50px rgba(0,0,0,0.5);
+    color:#fff;
+  }
+  h1 { text-align:center; font-size:1.5rem; margin-bottom:6px; }
+  .sub { text-align:center; opacity:.8; font-size:.85rem; margin-bottom:18px; }
+
+  /* ---------- PANTALLA INICIO ---------- */
+  #inicio { text-align:center; }
+  #inicio p { margin-bottom:18px; line-height:1.6; }
+  .btn {
+    background: linear-gradient(135deg,#a855f7,#ec4899);
+    border:none; color:#fff; font-size:1rem; font-weight:600;
+    padding:14px 32px; border-radius:50px; cursor:pointer;
+    box-shadow:0 8px 22px rgba(168,85,247,.5);
+    transition: transform .15s;
+  }
+  .btn:hover { transform: translateY(-2px) scale(1.03); }
+  .btn:disabled { opacity:.45; cursor:not-allowed; transform:none; }
+
+  /* ---------- JUEGO ---------- */
+  #juego { display:none; }
+  .barra {
+    display:flex; justify-content:space-between; align-items:center;
+    font-size:.85rem; margin-bottom:14px; opacity:.9;
+  }
+  .nivel-tag {
+    padding:4px 12px; border-radius:50px; font-weight:700; font-size:.75rem;
+    text-transform:uppercase; letter-spacing:.5px;
+  }
+  .nivel-facil { background:#22c55e; }
+  .nivel-intermedio { background:#f59e0b; }
+  .nivel-dificil { background:#ef4444; }
+
+  .escenario { display:flex; gap:18px; align-items:flex-start; }
+  .uma-box { flex:0 0 130px; text-align:center; }
+  .uma-box img { width:130px; height:130px; object-fit:contain;
+    filter: drop-shadow(0 6px 14px rgba(0,0,0,.6)); }
+  .uma-nombre { font-size:.8rem; font-weight:700; margin-top:4px; }
+  .bocadillo {
+    position:relative; background:#fff; color:#2b1b3d;
+    border-radius:16px; padding:12px 14px; font-size:.85rem;
+    margin-top:10px; min-height:56px; line-height:1.4;
+  }
+  .bocadillo::after {
+    content:''; position:absolute; top:-9px; left:50%; transform:translateX(-50%);
+    border:9px solid transparent; border-bottom-color:#fff; border-top:0;
+  }
+
+  .pregunta-box { flex:1; }
+  .pregunta {
+    font-size:1.05rem; font-weight:600; line-height:1.5;
+    margin-bottom:16px; min-height:60px;
+  }
+  .opciones { display:grid; gap:10px; }
+  .opcion {
+    background: rgba(255,255,255,0.14);
+    border:2px solid rgba(255,255,255,0.25);
+    color:#fff; text-align:left; font-size:.92rem;
+    padding:13px 16px; border-radius:14px; cursor:pointer;
+    transition: all .15s;
+  }
+  .opcion:hover:not(:disabled) {
+    background: rgba(255,255,255,0.26);
+    border-color:#c084fc;
+  }
+  .opcion.correcta { background:#16a34a; border-color:#22c55e; }
+  .opcion.incorrecta { background:#b91c1c; border-color:#ef4444; }
+  .opcion:disabled { cursor:default; }
+
+  /* ---------- ROMPECABEZAS ---------- */
+  .puzzle-wrap { margin-top:22px; text-align:center; }
+  .puzzle-titulo { font-size:.8rem; opacity:.85; margin-bottom:8px; }
+  .puzzle {
+    display:grid; grid-template-columns:repeat(5,1fr);
+    gap:3px; max-width:280px; margin:0 auto;
+    aspect-ratio: 3/4;
+    border-radius:12px; overflow:hidden;
+    background: rgba(0,0,0,.35);
+  }
+  .pieza {
+    background-image: url('img/carta.jpg');
+    background-size: 500% 400%;
+    background-repeat:no-repeat;
+    opacity:0; transition: opacity .6s;
+  }
+  .pieza.on { opacity:1; }
+
+  /* ---------- FINAL ---------- */
+  #final { display:none; text-align:center; }
+  #final img { max-width:260px; width:100%; border-radius:16px;
+    box-shadow:0 12px 40px rgba(0,0,0,.6); margin-bottom:18px; }
+  .carta-texto {
+    background: rgba(255,255,255,0.95); color:#2b1b3d;
+    border-radius:18px; padding:20px; text-align:left;
+    font-size:.95rem; line-height:1.7; margin-bottom:18px;
+  }
+  .puntaje-final { font-size:1.1rem; margin-bottom:16px; }
+
+  @media (max-width:620px) {
+    .escenario { flex-direction:column; align-items:center; }
+    .uma-box { flex:none; }
+    .bocadillo::after { display:none; }
+    .pregunta-box { width:100%; }
+  }
+</style>
+</head>
+<body>
+<div class="caja">
+
+  <!-- INICIO -->
+  <div id="inicio">
+    <h1>💜 Un regalito para ti 💜</h1>
+    <p class="sub">Hecho con mucho amor</p>
+    <p>Cinco chicas tienen algo que decirte.<br>
+       Responde bien sus preguntas y ellas irán armando una sorpresa al final.</p>
+    <button class="btn" onclick="empezar()">Empezar ✨</button>
+  </div>
+
+  <!-- JUEGO -->
+  <div id="juego">
+    <div class="barra">
+      <span id="contador">Pregunta 1 / 15</span>
+      <span id="nivelTag" class="nivel-tag nivel-facil">Fácil</span>
+      <span id="aciertos">✔ 0</span>
+    </div>
+
+    <div class="escenario">
+      <div class="uma-box">
+        <img id="umaImg" src="img/agnes.png" alt="">
+        <div class="uma-nombre" id="umaNombre">Agnes Tachyon</div>
+        <div class="bocadillo" id="bocadillo">A ver qué tan listo eres...</div>
+      </div>
+
+      <div class="pregunta-box">
+        <div class="pregunta" id="pregunta"></div>
+        <div class="opciones" id="opciones"></div>
+      </div>
+    </div>
+
+    <div class="puzzle-wrap">
+      <div class="puzzle-titulo">🧩 Rompecabezas: <span id="piezasTxt">0 / 20</span></div>
+      <div class="puzzle" id="puzzle"></div>
+    </div>
+  </div>
+
+  <!-- FINAL -->
+  <div id="final">
+    <h1>💜 Lo lograste 💜</h1>
+    <p class="puntaje-final" id="puntajeFinal"></p>
+    <img id="cartaFinal" src="img/carta.jpg" alt="Nuestra carta">
+    <div class="carta-texto" id="cartaTexto"></div>
+    <button class="btn" onclick="location.reload()">Jugar otra vez 🔁</button>
+  </div>
+
+</div>
+
+<script>
+/* ============================================================
+   CONFIGURACIÓN — aquí puedes cambiar todo fácilmente
+   ============================================================ */
+
+// Las 5 Umas. La imagen debe estar en la carpeta img/
+const UMAS = [
+  { nombre:"Agnes Tachyon", img:"img/agnes.png",
+    bien:["Interesante... no eres tan tonto después de todo.","Hmph. Correcto. No me decepcionas."],
+    mal:["Agnes Tachyon estaría muy decepcionada de ti.","Agnes Tachyon esperaba más de ti... qué lástima."] },
+  { nombre:"Meisho Doto", img:"img/doto.png",
+    bien:["¡S-sí! ¡Eso es! Qué alegría...","¡Bien hecho! Meisho Doto está orgullosa."],
+    mal:["Meisho Doto estaría muy decepcionada de ti...","Meisho Doto se pondría triste con esa respuesta."] },
+  { nombre:"TM Opera O", img:"img/opera.png",
+    bien:["¡Magnífico! Como se esperaba de ti.","¡Exacto! La grandeza reconoce la grandeza."],
+    mal:["TM Opera O estaría muy decepcionada de ti.","TM Opera O no puede aplaudir esa respuesta."] },
+  { nombre:"Still in Love", img:"img/still.png",
+    bien:["¡Ay, qué bonito! Acertaste.","Sí... eso es. Me haces feliz."],
+    mal:["Still in Love estaría muy decepcionada de ti...","Still in Love se queda callada ante eso."] },
+  { nombre:"Aston Machan", img:"img/aston.png",
+    bien:["¡Bien! Aston Machan lo sabía.","¡Correcto! Qué inteligente eres."],
+    mal:["Aston Machan estaría muy decepcionada de ti.","Aston Machan no esperaba eso de ti..."] }
+];
+
+// Las 15 preguntas: 5 fáciles, 5 intermedias, 5 difíciles
+const PREGUNTAS = [
+  // ---------- FÁCIL ----------
+  { nivel:"facil", p:"¿Cuál es el planeta más grande del sistema solar?",
+    o:["Marte","Júpiter","Saturno","Venus"], c:1 },
+  { nivel:"facil", p:"¿Cuántos continentes hay en la Tierra?",
+    o:["5","6","7","8"], c:2 },
+  { nivel:"facil", p:"¿Quién pintó la Mona Lisa?",
+    o:["Miguel Ángel","Leonardo da Vinci","Rafael","Van Gogh"], c:1 },
+  { nivel:"facil", p:"¿Cuál es el océano más grande del mundo?",
+    o:["Atlántico","Índico","Ártico","Pacífico"], c:3 },
+  { nivel:"facil", p:"¿Cuál es la capital de Japón?",
+    o:["Osaka","Kioto","Tokio","Nagoya"], c:2 },
+
+  // ---------- INTERMEDIO ----------
+  { nivel:"intermedio", p:"¿En qué año llegó el ser humano a la Luna por primera vez?",
+    o:["1965","1969","1972","1958"], c:1 },
+  { nivel:"intermedio", p:"¿Quién escribió 'Cien años de soledad'?",
+    o:["Mario Vargas Llosa","Julio Cortázar","Gabriel García Márquez","Pablo Neruda"], c:2 },
+  { nivel:"intermedio", p:"¿Cuál es el río más largo del mundo?",
+    o:["Nilo","Amazonas","Yangtsé","Misisipi"], c:1 },
+  { nivel:"intermedio", p:"¿Qué gas absorben las plantas para hacer fotosíntesis?",
+    o:["Oxígeno","Nitrógeno","Dióxido de carbono","Hidrógeno"], c:2 },
+  { nivel:"intermedio", p:"¿Cuántos huesos tiene el cuerpo humano adulto?",
+    o:["186","206","226","246"], c:1 },
+
+  // ---------- DIFÍCIL ----------
+  { nivel:"dificil", p:"¿Cuál es el elemento químico más abundante en el universo?",
+    o:["Oxígeno","Helio","Hidrógeno","Carbono"], c:2 },
+  { nivel:"dificil", p:"¿Quién fue el primer emperador romano?",
+    o:["Julio César","Augusto","Nerón","Trajano"], c:1 },
+  { nivel:"dificil", p:"¿Cuál es el país con más husos horarios?",
+    o:["Rusia","Estados Unidos","Francia","China"], c:2 },
+  { nivel:"dificil", p:"¿En qué año cayó el Muro de Berlín?",
+    o:["1987","1989","1991","1985"], c:1 },
+  { nivel:"dificil", p:"¿Cuál es el hueso más pequeño del cuerpo humano?",
+    o:["Estribo","Yunque","Martillo","Hioides"], c:0 }
+];
+
+// La carta final (imagen que se arma y texto)
+const CARTA_IMG = "img/carta.jpg";
+const CARTA_TEXTO = "Hola mi amor, este es un regalo que tenía pensado para otro mes pero ya que revelaste mi regalooo, tuve que adelantarlo, quería darte gracias por todo nuevamente de verdad eres lo mejor que me ha pasado tenerte cerca a hecho que me sienta mejor, que pueda ser yo misma y sobre todo me siento amada y eso me encantaaa.";
+
+/* ============================================================
+   LÓGICA DEL JUEGO — no necesitas tocar nada de aquí abajo
+   ============================================================ */
+
+const TOTAL_PIEZAS = 20; // 5 columnas x 4 filas
+let idx = 0, aciertos = 0, piezas = 0;
+
+// Crear el rompecabezas vacío
+const puzzleEl = document.getElementById('puzzle');
+for (let i = 0; i < TOTAL_PIEZAS; i++) {
+  const d = document.createElement('div');
+  d.className = 'pieza';
+  d.id = 'p' + i;
+  puzzleEl.appendChild(d);
+}
+
+function empezar() {
+  document.getElementById('inicio').style.display = 'none';
+  document.getElementById('juego').style.display = 'block';
+  mostrarPregunta();
+}
+
+function mostrarPregunta() {
+  if (idx >= PREGUNTAS.length) { terminar(); return; }
+  const q = PREGUNTAS[idx];
+  const uma = UMAS[idx % UMAS.length];
+
+  document.getElementById('contador').textContent = `Pregunta ${idx+1} / ${PREGUNTAS.length}`;
+  document.getElementById('aciertos').textContent = `✔ ${aciertos}`;
+
+  const tag = document.getElementById('nivelTag');
+  tag.className = 'nivel-tag ' + (
+    q.nivel === 'facil' ? 'nivel-facil' :
+    q.nivel === 'intermedio' ? 'nivel-intermedio' : 'nivel-dificil');
+  tag.textContent = q.nivel === 'facil' ? 'Fácil' :
+                    q.nivel === 'intermedio' ? 'Intermedio' : 'Difícil';
+
+  document.getElementById('umaImg').src = uma.img;
+  document.getElementById('umaNombre').textContent = uma.nombre;
+  document.getElementById('bocadillo').textContent = 'A ver qué tan listo eres...';
+  document.getElementById('pregunta').textContent = q.p;
+
+  const cont = document.getElementById('opciones');
+  cont.innerHTML = '';
+  q.o.forEach((txt, i) => {
+    const b = document.createElement('button');
+    b.className = 'opcion';
+    b.textContent = txt;
+    b.onclick = () => responder(i, q.c, uma);
+    cont.appendChild(b);
+  });
+}
+
+function responder(elegida, correcta, uma) {
+  const botones = document.querySelectorAll('.opcion');
+  botones.forEach(b => b.disabled = true);
+  botones[correcta].classList.add('correcta');
+
+  const boca = document.getElementById('bocadillo');
+
+  if (elegida === correcta) {
+    aciertos++;
+    boca.textContent = uma.bien[Math.floor(Math.random()*uma.bien.length)];
+    desbloquearPieza();
+  } else {
+    botones[elegida].classList.add('incorrecta');
+    boca.textContent = uma.mal[Math.floor(Math.random()*uma.mal.length)];
+  }
+
+  document.getElementById('aciertos').textContent = `✔ ${aciertos}`;
+  idx++;
+  setTimeout(mostrarPregunta, 1900);
+}
+
+function desbloquearPieza() {
+  if (piezas >= TOTAL_PIEZAS) return;
+  // Desbloquea una pieza aleatoria que siga oculta
+  const ocultas = [];
+  for (let i = 0; i < TOTAL_PIEZAS; i++) {
+    if (!document.getElementById('p'+i).classList.contains('on')) ocultas.push(i);
+  }
+  if (!ocultas.length) return;
+  const pick = ocultas[Math.floor(Math.random()*ocultas.length)];
+  const el = document.getElementById('p'+pick);
+  el.classList.add('on');
+  piezas++;
+  document.getElementById('piezasTxt').textContent = `${piezas} / ${TOTAL_PIEZAS}`;
+}
+
+function terminar() {
+  document.getElementById('juego').style.display = 'none';
+  document.getElementById('final').style.display = 'block';
+  document.getElementById('puntajeFinal').textContent =
+    `Acertaste ${aciertos} de ${PREGUNTAS.length} 💜`;
+  document.getElementById('cartaFinal').src = CARTA_IMG;
+  document.getElementById('cartaTexto').textContent = CARTA_TEXTO;
+}
+</script>
+</body>
+</html>
